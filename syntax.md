@@ -2,7 +2,7 @@
 
 ## Keywords
 
-|Word|Definition|  
-|----|----------|  
+|Symbol|Type|Definition|  
+|------|----|----------|  
 
 ## Variable syntax
