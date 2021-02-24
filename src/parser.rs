@@ -21,7 +21,6 @@ mod parsing_helper {
         }
 
         pub fn parse(mut self) {
-            let parsed_file = String::new();
             let file_pre_parse = self.file_content.trim();
             for c in file_pre_parse.split_whitespace() {
                 let file_vec: Vec<&str> = self.file_content.split_whitespace().collect();
