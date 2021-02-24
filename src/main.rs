@@ -11,13 +11,13 @@ use std::sync::*;
 mod parser;
 
 fn main() {
-    let matches = App::new("Coding language")
-        .name("lang_name_here")
+    let matches = App::new("Chorus")
+        .name("chorus")
         .version("0.0.1")
         .author("krista-chan")
         .about("Stupid idea by stupid girl")
         .arg(Arg::with_name("INPUT_FILE")
-            .help("The .<ext name> file to compile from")
+            .help("The .chr file to compile from")
             .index(1)
             .required(true))
         .arg(Arg::with_name("lang")
