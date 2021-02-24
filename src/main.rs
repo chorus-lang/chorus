@@ -1,4 +1,3 @@
-extern crate lua;
 
 use colored::*;
 use clap::{Arg, App};
@@ -55,11 +54,10 @@ fn compile(input_file: String, lang: String) {
     }
 
     File::open(input_file).expect("Unable to open specified file.").read_to_string(&mut readfile_buffer).unwrap();
-    println!("{}", readfile_buffer);
 
     std::thread::spawn(move || {
-        thread::sleep(time::Duration::from_millis(10000));
-        // compile (blocking)
+        parser::Parser::new(parser::Languages::Typescript, readfile_buffer).parse();
+
         *is_done.lock().unwrap() = true; // will end compile msg loop after compilation
     });
 
