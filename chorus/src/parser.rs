@@ -1,5 +1,7 @@
 pub use self::parsing_helper::{Languages, Parser};
 
+use chorus_lexer;
+
 mod parsing_helper {
     pub struct Parser {
         compile_target: Languages,
@@ -22,19 +24,9 @@ mod parsing_helper {
 
         pub fn parse(mut self) {
             let file_pre_parse = self.file_content.trim();
-            for c in file_pre_parse.split_whitespace() {
-                let file_vec: Vec<&str> =
-                    self.file_content.split_whitespace().collect();
-                match c {
-                    "let" => {
-                        let index =
-                            file_vec.iter().position(|&v| v == "let").unwrap();
-                        let decl_token = &file_vec[index..index + 4];
-                        println!("{:?}", decl_token);
-                    },
-                    _ => (),
-                }
-            }
+            let tokenized: Vec<chorus_lexer::Token> = chorus_lexer::tokenize(file_pre_parse).collect();
+            println!("\n{:?}", tokenized);
+            // Do the funny compile thing here
             self.parsed = true;
         }
     }

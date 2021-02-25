@@ -46,6 +46,18 @@ pub enum TokenKind {
     Slash,
     /// `%`
     Percent,
+    /// `=`
+    Assign,
+    /// `<`
+    Lt,
+    /// `>`
+    Gt,
+    /// `==`
+    Eq,
+    /// `<=`
+    Lte,
+    /// `>=`
+    Gte,
 
     /// `;`
     Semi,
@@ -61,7 +73,6 @@ pub fn tokenize(mut input: &str) -> impl Iterator<Item = Token> + '_ {
         if input.is_empty() {
             return None;
         }
-
         let token = Cursor::new(input).advance_token();
         input = &input[token.len..];
 
@@ -78,12 +89,20 @@ impl Cursor<'_> {
                 '/' => {
                     self.bump().unwrap();
                     Comment
-                },
+                }
                 '*' => {
                     self.bump().unwrap();
                     BlockComment { terminated: true }
-                },
+                }
                 _ => Slash,
+            },
+            // Gte/Lte/Eq
+            '=' => match self.first() {
+                '=' => {
+                    self.bump().unwrap();
+                    Eq
+                }
+                _ => Assign,
             },
 
             // single char tokens
@@ -92,7 +111,20 @@ impl Cursor<'_> {
             '*' => Star,
             '%' => Percent,
             ';' => Semi,
-
+            '<' => match self.first() {
+                '=' => {
+                    self.bump().unwrap();
+                    Lte
+                },
+                _ => Lt
+            }
+            '>' => match self.first() {
+                '=' => {
+                    self.bump().unwrap();
+                    Gte
+                },
+                _ => Gt
+            }
             _ => Unknown,
         };
 
@@ -118,7 +150,8 @@ mod tests {
         };
     }
 
-    const SINGLE_CHAR_TEST_STR: &'static str = "+-*/%;";
+    const SINGLE_CHAR_TEST_STR: &'static str = "+-*/%;<>";
+    const DOUBLE_CHAR_TEST_STR: &'static str = "<=>===";
 
     #[test]
     fn create_token() {
@@ -131,7 +164,16 @@ mod tests {
     #[test]
     fn single_char_tokens() {
         let tokens = tokenize(SINGLE_CHAR_TEST_STR).collect::<Vec<Token>>();
-        let expected = construct_test![Plus, Minus, Star, Slash, Percent, Semi];
+        let expected =
+            construct_test![Plus, Minus, Star, Slash, Percent, Semi, Lt, Gt];
+
+        assert_eq!(tokens, expected);
+    }
+
+    #[test]
+    fn double_char_tokens() {
+        let tokens = tokenize(DOUBLE_CHAR_TEST_STR).collect::<Vec<Token>>();
+        let expected = construct_test![Lte, Gte, Eq];
 
         assert_eq!(tokens, expected);
     }

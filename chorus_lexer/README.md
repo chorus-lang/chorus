@@ -1,4 +1,5 @@
-## TODO:
-[ ] Lexer
-[ ] Parser + AST
-[ ] Transpilers
+# TODO
+
+* [ ] Lexer
+* [ ] Parser + AST
+* [ ] Transpilers
