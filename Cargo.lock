@@ -6,9 +6,9 @@ version = 3
 name = "chorus"
 version = "0.1.0"
 dependencies = [
- "lexer",
+ "chorus_lexer",
 ]
 
 [[package]]
-name = "lexer"
+name = "chorus_lexer"
 version = "0.1.0"
