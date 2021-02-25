@@ -2,6 +2,9 @@
 
 mod cursor;
 
+use colored::*;
+use regex::Regex;
+
 use cursor::Cursor;
 
 use self::TokenKind::*;
@@ -17,6 +20,8 @@ impl Token {
         Self { kind, len }
     }
 }
+
+pub const VARIABLE_NAME_VALIDATION: [&str; 8] = ["/", "+", "-", "%", "=", "<", ">", "="];
 
 #[derive(Debug, PartialEq, PartialOrd)]
 pub enum TokenKind {
@@ -61,7 +66,7 @@ pub enum TokenKind {
 
     // Keywords
     /// `let foo<T> = bar;`
-    Let { t: Types, val: String },
+    Let { t: Types, name: String, val: String },
 
     /// `;`
     Semi,
@@ -74,8 +79,7 @@ pub enum TokenKind {
 
 #[derive(Debug, PartialEq, PartialOrd)]
 pub enum Types {
-    String
-
+    Dyn(String),
 }
 
 pub fn tokenize(mut input: &str) -> impl Iterator<Item = Token> + '_ {
@@ -120,15 +124,76 @@ impl Cursor<'_> {
                 'e' => {
                     self.bump().unwrap();
                     match self.first() {
-                    't' => {
-                        self.bump().unwrap();
-                        Let { t: Types::String, val: String::from("PeePee") }
-                    },
-                    _ => Unknown
-                }},
-                _ => Unknown
-            }
+                        't' => {
+                            self.bump().unwrap();
+                            let mut let_name = String::new();
+                            let mut let_type = String::new();
+                            let mut let_valu = String::new();
+                            let mut a = self.bump().unwrap();
+                            while a != '<' {
+                                if a.is_whitespace() {
+                                    a = self.bump().unwrap();
+                                    continue;
+                                }
+                                let_name.push(a);
+                                a = self.bump().unwrap();
+                            }
 
+                            if VARIABLE_NAME_VALIDATION.contains(&let_name.as_str()) {
+                                throw_error("Syntax Error:".red().bold(), format!("Invalid let name {}", let_name))
+                            }
+
+                            while !a.is_whitespace() {
+                                let_type.push(a);
+                                a = self.bump().unwrap();
+                            }
+
+                            if !Regex::new(r"<(T)>").unwrap().is_match(let_type.as_str()) {
+                                throw_error("Syntax Error:".red().bold(), format!("Missing or invalid `type` at `let {}`", let_name))
+                            }
+
+                            while a != ';' {
+                                if a.is_whitespace() {
+                                    a = self.bump().unwrap();
+                                    continue;
+                                }
+                                let_valu.push(a);
+                                a = self.bump().unwrap();
+                            }
+
+                            if !let_valu.contains("=") {
+                                throw_error(
+                                    "Syntax Error:".red().bold(),
+                                    format!(
+                                        "Missing `=` at `let {}{}`",
+                                        let_name, let_type
+                                    ),
+                                )
+                            } else if let_valu == "=" {
+                                throw_error(
+                                    "Syntax Error:".red().bold(),
+                                    format!(
+                                        "Missing value at `let {}{}`",
+                                        let_name, let_type
+                                    ),
+                                )
+                            }
+
+                            println!(
+                                "{}\n{}\n{}",
+                                let_name, let_type, let_valu
+                            );
+                            Let {
+                                t: Types::Dyn(let_type),
+                                name: let_name,
+                                val: String::from(""),
+                            }
+                        }
+                        _ => Unknown,
+                    }
+                }
+                _ => Unknown,
+            },
             // single char tokens
             '+' => Plus,
             '-' => Minus,
@@ -139,21 +204,26 @@ impl Cursor<'_> {
                 '=' => {
                     self.bump().unwrap();
                     Lte
-                },
-                _ => Lt
-            }
+                }
+                _ => Lt,
+            },
             '>' => match self.first() {
                 '=' => {
                     self.bump().unwrap();
                     Gte
-                },
-                _ => Gt
-            }
+                }
+                _ => Gt,
+            },
             _ => Unknown,
         };
 
         Token::new(token_kind, self.len_consumed())
     }
+}
+
+fn throw_error(t: ColoredString, message: String) {
+    println!("{} {}", t, message);
+    std::process::exit(0)
 }
 
 #[cfg(test)]
