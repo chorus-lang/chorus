@@ -1,5 +1,6 @@
 [workspace]
 members = [
-  "chorus_lexer",
   "chorus",
+  "chorus_ast",
+  "chorus_lexer",
 ]

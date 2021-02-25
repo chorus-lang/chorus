@@ -6,7 +6,7 @@ use cursor::Cursor;
 
 use self::TokenKind::*;
 
-#[derive(Debug, PartialEq, Eq)]
+#[derive(Debug, PartialEq, PartialOrd)]
 pub struct Token {
     kind: TokenKind,
     len: usize,
@@ -18,8 +18,19 @@ impl Token {
     }
 }
 
-#[derive(Debug, PartialEq, Eq)]
+#[derive(Debug, PartialEq, PartialOrd)]
 pub enum TokenKind {
+    // TODO: implement literals
+    // literals
+    /// 0-9
+    Int(usize),
+    /// FLoating point integer
+    Float(f64),
+    /// String literal
+    Str(String),
+    /// Boolean literal
+    Bool(bool),
+
     /// `//`
     Comment,
     /// `/*` `*/`
@@ -45,17 +56,13 @@ pub enum TokenKind {
     Unknown,
 }
 
-pub fn first_token(input: &str) -> Token {
-    Cursor::new(input).advance_token()
-}
-
 pub fn tokenize(mut input: &str) -> impl Iterator<Item = Token> + '_ {
     std::iter::from_fn(move || {
         if input.is_empty() {
             return None;
         }
 
-        let token = first_token(input);
+        let token = Cursor::new(input).advance_token();
         input = &input[token.len..];
 
         Some(token)
