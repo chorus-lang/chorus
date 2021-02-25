@@ -59,6 +59,10 @@ pub enum TokenKind {
     /// `>=`
     Gte,
 
+    // Keywords
+    /// `let foo<T> = bar;`
+    Let { t: Types, val: String },
+
     /// `;`
     Semi,
 
@@ -66,6 +70,12 @@ pub enum TokenKind {
     Whitespace,
     /// Unknown token
     Unknown,
+}
+
+#[derive(Debug, PartialEq, PartialOrd)]
+pub enum Types {
+    String
+
 }
 
 pub fn tokenize(mut input: &str) -> impl Iterator<Item = Token> + '_ {
@@ -96,7 +106,7 @@ impl Cursor<'_> {
                 }
                 _ => Slash,
             },
-            // Gte/Lte/Eq
+            // Eq
             '=' => match self.first() {
                 '=' => {
                     self.bump().unwrap();
@@ -104,6 +114,20 @@ impl Cursor<'_> {
                 }
                 _ => Assign,
             },
+
+            // Keywords
+            'l' => match self.first() {
+                'e' => {
+                    self.bump().unwrap();
+                    match self.first() {
+                    't' => {
+                        self.bump().unwrap();
+                        Let { t: Types::String, val: String::from("PeePee") }
+                    },
+                    _ => Unknown
+                }},
+                _ => Unknown
+            }
 
             // single char tokens
             '+' => Plus,

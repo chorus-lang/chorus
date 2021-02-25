@@ -23,8 +23,7 @@ mod parsing_helper {
         }
 
         pub fn parse(mut self) {
-            let file_pre_parse = self.file_content.trim();
-            let tokenized: Vec<chorus_lexer::Token> = chorus_lexer::tokenize(file_pre_parse).collect();
+            let tokenized: Vec<chorus_lexer::Token> = chorus_lexer::tokenize(self.file_content.as_str()).collect();
             println!("\n{:?}", tokenized);
             // Do the funny compile thing here
             self.parsed = true;
