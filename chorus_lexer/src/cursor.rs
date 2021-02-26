@@ -55,9 +55,7 @@ impl<'a> Cursor<'a> {
 
         self.prev = c;
         if c == '\n' {
-            println!("{}", self.ln);
             self.ln  += 1;
-            println!("{}", self.ln);
             self.col  = 1;
         } else {
             self.col += 1
