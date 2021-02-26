@@ -1,7 +1,5 @@
 pub use self::parsing_helper::{Languages, Parser};
 
-use chorus_lexer;
-
 mod parsing_helper {
     pub struct Parser {
         compile_target: Languages,

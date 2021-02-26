@@ -21,7 +21,8 @@ impl Token {
     }
 }
 
-pub const VARIABLE_NAME_VALIDATION: [&str; 8] = ["/", "+", "-", "%", "=", "<", ">", "="];
+pub const VARIABLE_NAME_VALIDATION: [&str; 8] =
+    ["/", "+", "-", "%", "=", "<", ">", "="];
 
 #[derive(Debug, PartialEq, PartialOrd)]
 pub enum TokenKind {
@@ -71,6 +72,8 @@ pub enum TokenKind {
     /// `;`
     Semi,
 
+    /// A newline
+    Newline,
     /// Any whitespace character
     Whitespace,
     /// Unknown token
@@ -126,21 +129,34 @@ impl Cursor<'_> {
                     match self.first() {
                         't' => {
                             self.bump().unwrap();
+                            self.bump().unwrap();
                             let mut let_name = String::new();
                             let mut let_type = String::new();
                             let mut let_valu = String::new();
                             let mut a = self.bump().unwrap();
                             while a != '<' {
-                                if a.is_whitespace() {
-                                    a = self.bump().unwrap();
-                                    continue;
+                                if a.is_whitespace() || a == ';' || a == '=' {
+                                    println!("\n{}", self.ln);
+                                    throw_error("Syntax Error:".red().bold(), 
+                                    "Missing let type notation (use `let foo<T> = ...;`)".to_string(),
+                                    self.ln,
+                                    self.col
+                                );
                                 }
                                 let_name.push(a);
                                 a = self.bump().unwrap();
                             }
 
-                            if VARIABLE_NAME_VALIDATION.contains(&let_name.as_str()) {
-                                throw_error("Syntax Error:".red().bold(), format!("Invalid let name {}", let_name))
+                            if VARIABLE_NAME_VALIDATION
+                                .contains(&let_name.as_str())
+                            {
+                                println!("{}", self.ln);
+                                throw_error(
+                                    "Syntax Error:".red().bold(),
+                                    format!("Invalid let name {}", let_name),
+                                    self.ln,
+                                    self.col,
+                                )
                             }
 
                             while !a.is_whitespace() {
@@ -148,8 +164,19 @@ impl Cursor<'_> {
                                 a = self.bump().unwrap();
                             }
 
-                            if !Regex::new(r"<(T)>").unwrap().is_match(let_type.as_str()) {
-                                throw_error("Syntax Error:".red().bold(), format!("Missing or invalid `type` at `let {}`", let_name))
+                            if !Regex::new(r"<(T|string)>")
+                                .unwrap()
+                                .is_match(let_type.as_str())
+                            {
+                                throw_error(
+                                    "Syntax Error:".red().bold(),
+                                    format!(
+                                        "Missing or invalid `type` at `let {}`",
+                                        let_name,
+                                    ),
+                                    self.ln,
+                                    self.col,
+                                )
                             }
 
                             while a != ';' {
@@ -168,6 +195,8 @@ impl Cursor<'_> {
                                         "Missing `=` at `let {}{}`",
                                         let_name, let_type
                                     ),
+                                    self.ln,
+                                    self.col,
                                 )
                             } else if let_valu == "=" {
                                 throw_error(
@@ -176,17 +205,17 @@ impl Cursor<'_> {
                                         "Missing value at `let {}{}`",
                                         let_name, let_type
                                     ),
+                                    self.ln,
+                                    self.col,
                                 )
                             }
 
-                            println!(
-                                "{}\n{}\n{}",
-                                let_name, let_type, let_valu
-                            );
                             Let {
-                                t: Types::Dyn(let_type),
+                                t: Types::Dyn(
+                                    let_type.replace("<", "").replace(">", ""),
+                                ),
                                 name: let_name,
-                                val: String::from(""),
+                                val: let_valu.replace("=", ""),
                             }
                         }
                         _ => Unknown,
@@ -214,6 +243,7 @@ impl Cursor<'_> {
                 }
                 _ => Gt,
             },
+
             _ => Unknown,
         };
 
@@ -221,8 +251,13 @@ impl Cursor<'_> {
     }
 }
 
-fn throw_error(t: ColoredString, message: String) {
-    println!("{} {}", t, message);
+fn throw_error(
+    t: ColoredString,
+    message: String,
+    ln: i32,
+    col: i32,
+) {
+    println!("{} {} @ line {}, col {}", t, message, ln, col);
     std::process::exit(0)
 }
 

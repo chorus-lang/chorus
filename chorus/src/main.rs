@@ -82,8 +82,8 @@ fn compile(input_file: String, lang: String) {
         parser::Parser::new(parser::Languages::Typescript, readfile_buffer)
             .parse();
 
-        *is_done.lock().unwrap() = true; // will end compile msg loop after
-                                         // compilation
+        *is_done.lock().unwrap() = true; /* will end compile msg loop after
+                                            compilation */
     });
 
     loop {

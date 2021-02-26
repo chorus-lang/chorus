@@ -5,6 +5,8 @@ pub(crate) struct Cursor<'a> {
     start_len: usize,
     chars: Chars<'a>,
     prev: char,
+    pub ln: i32,
+    pub col: i32
 }
 
 pub(crate) const EOF: char = '\0';
@@ -15,6 +17,8 @@ impl<'a> Cursor<'a> {
             start_len: input.len(),
             chars: input.chars(),
             prev: EOF,
+            ln: 1,
+            col: 1
         }
     }
 
@@ -50,6 +54,14 @@ impl<'a> Cursor<'a> {
         let c = self.chars.next()?;
 
         self.prev = c;
+        if c == '\n' {
+            println!("{}", self.ln);
+            self.ln  += 1;
+            println!("{}", self.ln);
+            self.col  = 1;
+        } else {
+            self.col += 1
+        }
 
         Some(c)
     }
