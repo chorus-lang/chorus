@@ -29,13 +29,13 @@ pub enum TokenKind {
     // TODO: implement literals
     // literals
     /// 0-9
-    Int(usize),
+    // Int(usize),
     /// FLoating point integer
-    Float(f64),
+    // Float(f64),
     /// String literal
-    Str(String),
+    // Str(String),
     /// Boolean literal
-    Bool(bool),
+    // Bool(bool),
 
     /// `//`
     Comment,
@@ -82,6 +82,10 @@ pub enum TokenKind {
 
 #[derive(Debug, PartialEq, PartialOrd)]
 pub enum Types {
+    String,
+    Float,
+    Int,
+    Bool,
     Dyn(String),
 }
 
@@ -164,7 +168,7 @@ impl Cursor<'_> {
                                 a = self.bump().unwrap();
                             }
 
-                            if !Regex::new(r"<(T|string)>")
+                            if !Regex::new(r"<(String|Bool|Int|Float|Dyn\(\b.*\b\))>")
                                 .unwrap()
                                 .is_match(let_type.as_str())
                             {
@@ -211,9 +215,7 @@ impl Cursor<'_> {
                             }
 
                             Let {
-                                t: Types::Dyn(
-                                    let_type.replace("<", "").replace(">", ""),
-                                ),
+                                t: resolve_t(let_type, self.ln, self.col),
                                 name: let_name,
                                 val: let_valu.replace("=", ""),
                             }
@@ -251,12 +253,35 @@ impl Cursor<'_> {
     }
 }
 
-fn throw_error(
-    t: ColoredString,
-    message: String,
-    ln: i32,
-    col: i32,
-) {
+fn resolve_t(let_type: String, ln: i32, col: i32) -> Types {
+    if let_type
+        .replace("<", "")
+        .replace(">", "")
+        .starts_with("Dyn")
+    {
+        Types::Dyn(
+            let_type
+                .replace("Dyn", "")
+                .replace("(", "")
+                .replace(")", "")
+                .replace("<", "")
+                .replace(">", ""),
+        )
+    } else {
+        match let_type.replace("<", "").replace(">", "").as_str() {
+            "String" => Types::String,
+            "Bool" => Types::Bool,
+            "Int" => Types::Int,
+            "Float" => Types::Float,
+            _ => {
+                throw_error("Syntax Error:".red().bold(), format!("Invalid let type {}", let_type), ln, col);
+                Types::Dyn(String::from(""))
+            }
+        }
+    }
+}
+
+fn throw_error(t: ColoredString, message: String, ln: i32, col: i32) {
     println!("{} {} @ line {}, col {}", t, message, ln, col);
     std::process::exit(0)
 }
