@@ -78,12 +78,17 @@ fn compile(input_file: String, lang: String) {
         .read_to_string(&mut readfile_buffer)
         .unwrap();
 
+    let now = Arc::new(Mutex::new(time::Instant::now()));
+    let elapsed: Arc<Mutex<u128>> = Arc::new(Mutex::new(0));
+    let e_clone = Arc::clone(&elapsed);
+
     std::thread::spawn(move || {
         parser::Parser::new(parser::Languages::Typescript, readfile_buffer)
             .parse();
 
         *is_done.lock().unwrap() = true; /* will end compile msg loop after
                                             compilation */
+        *elapsed.lock().unwrap() = now.lock().unwrap().elapsed().as_millis();
     });
 
     loop {
@@ -99,5 +104,5 @@ fn compile(input_file: String, lang: String) {
             continue;
         };
     }
-    println!("{}", "Finished compiling!".green())
+    println!("{} {}ms", "Finished compiling in".green(), e_clone.lock().unwrap())
 }

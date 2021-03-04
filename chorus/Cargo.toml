@@ -11,3 +11,4 @@ chorus_lexer = { path = "../chorus_lexer" }
 clap = "2.33.3"
 colored = "2.0.0"
 lua = "0.0.10"
+regex = "1.4.3"
