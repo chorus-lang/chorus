@@ -62,14 +62,31 @@ pub enum Tokens {
     Lte,
     /// `>=`
     Gte,
+    /// And/Or
+    And,
+    BitwiseAnd,
+    Or,
+    BitwiseOr,
     /// `;`
     Semi,
-    /// ()
+    /// "" ''
+    DoubleQuote,
+    SingleQuote,
+    /// |> (ECMA pipe operator)
+    Pipe,
+    /// () {} []
     OpenBracket,
     ClosedBracket,
+    OpenCurly,
+    ClosedCurly,
+    OpenSquare,
+    ClosedSquare,
     /// keywords
     Let,
     Function,
+    If,
+    While,
+    For,
     /// Identifiers
     Identifier(std::string::String),
     TakesValue,
@@ -79,11 +96,6 @@ pub enum Tokens {
     Float,
     Int,
     Bool,
-    /// Typed values
-    Num(i128),
-    Floating(f64),
-    Boolean(bool),
-    String_(std::string::String),
     Dyn(std::string::String),
     /// A newline
     Newline,

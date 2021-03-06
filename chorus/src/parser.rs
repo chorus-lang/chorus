@@ -80,11 +80,87 @@ mod parsing_helper {
                     Rule {
                         kind: TokenKind(Tokens::ClosedBracket),
                         re: Regex::new(r"^\)").unwrap()
+                    },
+                    Rule {
+                        kind: TokenKind(Tokens::OpenCurly),
+                        re: Regex::new(r"^\{").unwrap()
+                    },
+                    Rule {
+                        kind: TokenKind(Tokens::ClosedCurly),
+                        re: Regex::new(r"^\}").unwrap()
+                    },
+                    Rule {
+                        kind: TokenKind(Tokens::OpenSquare),
+                        re: Regex::new(r"^\[").unwrap()
+                    },
+                    Rule {
+                        kind: TokenKind(Tokens::ClosedSquare),
+                        re: Regex::new(r"^\]").unwrap()
+                    },
+                    Rule {
+                        kind: TokenKind(Tokens::DoubleQuote),
+                        re: Regex::new("^\"").unwrap()
+                    },
+                    Rule {
+                        kind: TokenKind(Tokens::SingleQuote),
+                        re: Regex::new(r"^'").unwrap()
+                    },
+                    Rule {
+                        kind: TokenKind(Tokens::Pipe),
+                        re: Regex::new(r"^\|>").unwrap()
+                    },
+                    Rule {
+                        kind: TokenKind(Tokens::Function),
+                        re: Regex::new(r"^fn").unwrap()
+                    },
+                    Rule {
+                        kind: TokenKind(Tokens::If),
+                        re: Regex::new(r"^if").unwrap()
+                    },
+                    Rule {
+                        kind: TokenKind(Tokens::While),
+                        re: Regex::new(r"^while").unwrap()
+                    },
+                    Rule {
+                        kind: TokenKind(Tokens::For),
+                        re: Regex::new(r"^for").unwrap()
+                    },
+                    Rule {
+                        kind: TokenKind(Tokens::Or),
+                        re: Regex::new(r"^\|\|").unwrap()
+                    },
+                    Rule {
+                        kind: TokenKind(Tokens::BitwiseOr),
+                        re: Regex::new(r"^\|").unwrap()
+                    },
+                    Rule {
+                        kind: TokenKind(Tokens::And),
+                        re: Regex::new(r"^&&").unwrap()
+                    },
+                    Rule {
+                        kind: TokenKind(Tokens::BitwiseAnd),
+                        re: Regex::new(r"^&").unwrap()
+                    },
+                    Rule {
+                        kind: TokenKind(Tokens::Plus),
+                        re: Regex::new(r"^\+").unwrap()
+                    },
+                    Rule {
+                        kind: TokenKind(Tokens::Minus),
+                        re: Regex::new(r"^-").unwrap()
+                    },
+                    Rule {
+                        kind: TokenKind(Tokens::Percent),
+                        re: Regex::new(r"^%").unwrap()
+                    },
+                    Rule {
+                        kind: TokenKind(Tokens::Star),
+                        re: Regex::new(r"^\*").unwrap()
                     }
                 )
             );
             let tokenized = lexer.tokenize(&self.file_content);
-            println!("\n{:#?}", tokenized);
+            println!("\n{:?}", tokenized);
             // Do the funny compile thing here
             self.parsed = true;
         }
