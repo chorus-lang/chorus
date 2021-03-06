@@ -194,48 +194,6 @@ impl Lexer {
     }
 }
 
-// impl Cursor<'_> {
-//     fn advance_token(&mut self) -> Token {
-//         let first_char = self.bump().unwrap();
-//         let token_kind = match first_char {
-//             // Comments
-//             // Eq
-//             '=' => match self.first() {
-//                 '=' => {
-//                     self.bump().unwrap();
-//                     Eq
-//                 }
-//                 _ => Assign,
-//             },
-
-//             // single char tokens
-//             '+' => Plus,
-//             '-' => Minus,
-//             '*' => Star,
-//             '%' => Percent,
-//             ';' => Semi,
-//             '<' => match self.first() {
-//                 '=' => {
-//                     self.bump().unwrap();
-//                     Lte
-//                 }
-//                 _ => Lt,
-//             },
-//             '>' => match self.first() {
-//                 '=' => {
-//                     self.bump().unwrap();
-//                     Gte
-//                 }
-//                 _ => Gt,
-//             },
-
-//             _ => Unknown,
-//         };
-
-//         Token::new(token_kind, self.len_consumed())
-//     }
-// }
-
 fn resolve_t(mut let_type: std::string::String, ln: i32, col: i32) -> Tokens {
     if let_type
         .replace("<", "")
