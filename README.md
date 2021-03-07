@@ -6,11 +6,11 @@ This is my first language please don't booli me
 
 ## Keywords
 
-- let
-- fn
-- while
-- for
-- if
+- `let`
+- `fn`
+- `while`
+- `for`
+- `if`
 
 ## Operators
 
