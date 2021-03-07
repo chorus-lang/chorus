@@ -46,3 +46,5 @@ let foo<Type> = bar;
 ```_
 fn foo<Generic T>(, arg<Type>) => <Type> { ... }
 ```
+
+### Syntax is not finalized
