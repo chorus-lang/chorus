@@ -7,8 +7,13 @@ use self::Tokens::*;
 
 #[derive(Clone, Debug, PartialEq, PartialOrd)]
 pub struct Token {
-    kind: TokenKind,
-    len: usize
+    pub kind: TokenKind,
+    pub len: usize
+}
+
+#[derive(Clone, Debug)]
+pub enum Languages {
+    Typescript,
 }
 
 #[derive(Clone, Debug)]

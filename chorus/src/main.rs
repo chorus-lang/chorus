@@ -83,7 +83,8 @@ fn compile(input_file: String, lang: String) {
     let e_clone = Arc::clone(&elapsed);
 
     std::thread::spawn(move || {
-        parser::Parser::new(parser::Languages::Typescript, readfile_buffer)
+        use chorus_lexer::Languages;
+        parser::Parser::new(Languages::Typescript, readfile_buffer)
             .parse();
 
         *is_done.lock().unwrap() = true; /* will end compile msg loop after

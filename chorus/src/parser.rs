@@ -1,14 +1,12 @@
-pub use self::parsing_helper::{Languages, Parser};
+pub use self::parsing_helper::{Parser};
 
 mod parsing_helper {
+    use chorus_lexer::Languages;
+
     pub struct Parser {
         compile_target: Languages,
         file_content: String,
         parsed: bool,
-    }
-
-    pub enum Languages {
-        Typescript,
     }
 
     impl Parser {
@@ -22,6 +20,7 @@ mod parsing_helper {
 
         pub fn parse(mut self) {
             use chorus_lexer::{Rule, TokenKind, Tokens};
+            use chorus_ast::Ast;
             use regex::Regex;
             let lexer = chorus_lexer::Lexer::build(
                 vec!(
@@ -160,8 +159,8 @@ mod parsing_helper {
                 )
             );
             let tokenized = lexer.tokenize(&self.file_content);
-            println!("\n{:?}", tokenized);
             // Do the funny compile thing here
+            /*println!("{:?}",*/ Ast::build(self.compile_target, tokenized).parse() /*)*/;
             self.parsed = true;
         }
     }
